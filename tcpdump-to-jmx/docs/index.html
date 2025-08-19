@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCPDump to JMX Converter API</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            padding-top: 50px;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+        .method-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .method-get { background-color: #28a745; color: white; }
+        .method-post { background-color: #007bff; color: white; }
+        .method-put { background-color: #ffc107; color: black; }
+        .method-delete { background-color: #dc3545; color: white; }
+        .endpoint {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+        .status-healthy {
+            background-color: #28a745;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center text-white mb-5">
+            <h1 class="display-4 fw-bold">🚀 TCPDump to JMX Converter API</h1>
+            <p class="lead">Convert TCP dump files to HAR and JMX formats with automatic correlation and parameterization</p>
+            <div class="mt-3">
+                <span class="status-indicator status-healthy"></span>
+                <span>API Status: Healthy</span>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">✨ Key Features</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="feature-icon">📦</div>
+                        <h5>PCAP to HAR</h5>
+                        <p>Convert TCP dump files to HTTP Archive format</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="feature-icon">🔄</div>
+                        <h5>HAR to JMX</h5>
+                        <p>Generate JMeter test plans from HAR files</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="feature-icon">🎯</div>
+                        <h5>Smart Correlation</h5>
+                        <p>Automatic detection and correlation of dynamic values</p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-4 text-center">
+                        <div class="feature-icon">📊</div>
+                        <h5>Parameterization</h5>
+                        <p>Intelligent parameterization of test data</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="feature-icon">☁️</div>
+                        <h5>S3 Storage</h5>
+                        <p>Secure storage of converted files in AWS S3</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="feature-icon">⚡</div>
+                        <h5>Real-time Updates</h5>
+                        <p>WebSocket support for live conversion progress</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">📡 API Endpoints</h3>
+            </div>
+            <div class="card-body">
+                <!-- Health Check -->
+                <h5 class="mt-3">Health Check</h5>
+                <div class="endpoint">
+                    <span class="method-badge method-get">GET</span>
+                    <code>/api/v1/health</code>
+                </div>
+                <p>Check the health status of the API service.</p>
+
+                <!-- Convert -->
+                <h5 class="mt-4">Convert TCP Dump</h5>
+                <div class="endpoint">
+                    <span class="method-badge method-post">POST</span>
+                    <code>/api/v1/convert</code>
+                </div>
+                <p>Upload a TCP dump file for conversion to HAR and JMX formats.</p>
+                <p><strong>Request:</strong></p>
+                <pre>Content-Type: multipart/form-data
+
+file: [PCAP file]
+port: 8080 (optional)
+host: example.com (optional)
+correlation: true (optional, default: true)
+parameterization: true (optional, default: true)
+threads: 10 (optional, default: 10)
+rampup: 10 (optional, default: 10)
+loops: 1 (optional, default: 1)</pre>
+                <p><strong>Response:</strong></p>
+                <pre>{
+    "job_id": "uuid-string",
+    "status": "pending",
+    "message": "Conversion job started successfully",
+    "links": {
+        "status": "/api/v1/status/{job_id}",
+        "websocket": "/api/v1/ws/{job_id}"
+    }
+}</pre>
+
+                <!-- Job Status -->
+                <h5 class="mt-4">Get Job Status</h5>
+                <div class="endpoint">
+                    <span class="method-badge method-get">GET</span>
+                    <code>/api/v1/status/{jobId}</code>
+                </div>
+                <p>Get the current status of a conversion job.</p>
+                <p><strong>Response:</strong></p>
+                <pre>{
+    "job_id": "uuid-string",
+    "status": "completed",
+    "progress": 100,
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:01:00Z",
+    "file_name": "capture.pcap",
+    "file_size": 1024000,
+    "har_file": "/api/v1/download/{job_id}/har",
+    "jmx_file": "/api/v1/download/{job_id}/jmx",
+    "har_s3_url": "https://s3.amazonaws.com/...",
+    "jmx_s3_url": "https://s3.amazonaws.com/..."
+}</pre>
+
+                <!-- Download -->
+                <h5 class="mt-4">Download Converted File</h5>
+                <div class="endpoint">
+                    <span class="method-badge method-get">GET</span>
+                    <code>/api/v1/download/{jobId}/{fileType}</code>
+                </div>
+                <p>Download the converted file. FileType can be 'har' or 'jmx'.</p>
+
+                <!-- WebSocket -->
+                <h5 class="mt-4">WebSocket Progress Updates</h5>
+                <div class="endpoint">
+                    <span class="method-badge method-get">GET</span>
+                    <code>/api/v1/ws/{jobId}</code>
+                </div>
+                <p>Connect via WebSocket to receive real-time progress updates for a conversion job.</p>
+                <p><strong>Message Format:</strong></p>
+                <pre>{
+    "type": "progress",
+    "job_id": "uuid-string",
+    "status": "processing",
+    "progress": 50,
+    "message": "Converting HAR to JMX..."
+}</pre>
+
+                <!-- List Conversions -->
+                <h5 class="mt-4">List Recent Conversions</h5>
+                <div class="endpoint">
+                    <span class="method-badge method-get">GET</span>
+                    <code>/api/v1/conversions?limit=20&offset=0</code>
+                </div>
+                <p>Get a list of recent conversion jobs.</p>
+            </div>
+        </div>
+
+        <!-- Usage Example -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">💻 Usage Example</h3>
+            </div>
+            <div class="card-body">
+                <h5>Using cURL</h5>
+                <pre>#!/bin/bash
+
+# 1. Upload PCAP file for conversion
+response=$(curl -X POST http://localhost:8080/api/v1/convert \
+  -F "file=@capture.pcap" \
+  -F "correlation=true" \
+  -F "parameterization=true")
+
+# 2. Extract job ID
+job_id=$(echo $response | jq -r '.job_id')
+
+# 3. Check job status
+curl http://localhost:8080/api/v1/status/$job_id
+
+# 4. Download converted files
+curl -O http://localhost:8080/api/v1/download/$job_id/har
+curl -O http://localhost:8080/api/v1/download/$job_id/jmx</pre>
+
+                <h5 class="mt-3">Using JavaScript (WebSocket)</h5>
+                <pre>// Connect to WebSocket for real-time updates
+const ws = new WebSocket(`ws://localhost:8080/api/v1/ws/${jobId}`);
+
+ws.onmessage = (event) => {
+    const update = JSON.parse(event.data);
+    console.log(`Progress: ${update.progress}% - ${update.message}`);
+    
+    if (update.status === 'completed') {
+        console.log('Conversion completed!');
+        ws.close();
+    }
+};
+
+ws.onerror = (error) => {
+    console.error('WebSocket error:', error);
+};
+
+ws.onclose = () => {
+    console.log('WebSocket connection closed');
+};</pre>
+            </div>
+        </div>
+
+        <!-- Configuration -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">⚙️ Configuration</h3>
+            </div>
+            <div class="card-body">
+                <h5>Environment Variables</h5>
+                <pre># Server Configuration
+SERVER_PORT=8080
+GIN_MODE=release
+MAX_FILE_SIZE=524288000
+
+# AWS S3 Configuration
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+S3_BUCKET_NAME=tcpdump-conversions
+
+# Worker Configuration
+MAX_WORKERS=10
+JOB_TIMEOUT=3600
+RETENTION_PERIOD=168</pre>
+
+                <h5 class="mt-3">Docker Deployment</h5>
+                <pre># Build and run with Docker Compose
+docker-compose up -d
+
+# Or run with Docker
+docker build -t tcpdump-to-jmx .
+docker run -p 8080:8080 --env-file .env tcpdump-to-jmx</pre>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-white mt-5 mb-3">
+            <p>Built with ❤️ using Go, Gin, and AWS S3</p>
+            <p>Version 1.0.0 | <a href="https://github.com/your-repo" class="text-white">GitHub</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive API testing functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check API health
+            fetch('/api/v1/health')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('API Health:', data);
+                })
+                .catch(error => {
+                    console.error('API Health Check Failed:', error);
+                });
+        });
+    </script>
+</body>
+</html>
