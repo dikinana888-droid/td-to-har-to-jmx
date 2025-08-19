@@ -1,4 +1,4 @@
-.PHONY: help build run test clean docker-build docker-run docker-compose-up docker-compose-down
+.PHONY: help build build-cli run run-server run-cli test clean docker-build docker-run docker-compose-up docker-compose-down install
 
 # Variables
 APP_NAME=tcpdump-to-jmx
@@ -12,11 +12,18 @@ help: ## Show this help message
 	@echo 'Available targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-20s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-build: ## Build the application
+build: ## Build the CLI application
 	$(GO) build $(GOFLAGS) -o $(APP_NAME) .
 
-run: ## Run the application locally
-	$(GO) run main.go
+build-cli: build ## Alias for build
+
+run: run-server ## Run the API server (default)
+
+run-server: ## Run the API server
+	$(GO) run main.go server
+
+run-cli: ## Show CLI help
+	$(GO) run main.go --help
 
 test: ## Run tests
 	$(GO) test $(GOFLAGS) ./...
@@ -54,5 +61,16 @@ lint: ## Run linter
 fmt: ## Format code
 	gofmt -s -w .
 	goimports -w .
+
+install: build ## Install the binary to GOPATH/bin
+	cp $(APP_NAME) $(GOPATH)/bin/$(APP_NAME) || cp $(APP_NAME) ~/go/bin/$(APP_NAME)
+
+convert-example: build ## Run example conversion (requires test.pcap)
+	@if [ -f "examples/test.pcap" ]; then \
+		./$(APP_NAME) convert -i examples/test.pcap -o ./output --verbose; \
+	else \
+		echo "Error: examples/test.pcap not found. Create it first with:" ; \
+		echo "  sudo tcpdump -i any -w examples/test.pcap -c 100 port 80" ; \
+	fi
 
 .DEFAULT_GOAL := help
