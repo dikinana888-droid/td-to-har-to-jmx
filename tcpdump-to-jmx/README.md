@@ -1,16 +1,18 @@
-# TCPDump to JMX Converter API 🚀
+# TCPDump to JMX Converter 🚀
 
-REST API сервис для конвертации TCP dump файлов в HAR и JMX форматы с автоматической корреляцией и параметризацией для Apache JMeter.
+Универсальный инструмент для конвертации TCP dump файлов в HAR и JMX форматы с автоматической корреляцией и параметризацией для Apache JMeter. Доступен как CLI утилита и REST API сервис.
 
 ## 🌟 Возможности
 
+- **CLI режим**: Локальная конвертация файлов через командную строку
+- **REST API сервис**: Web-сервис для удаленной конвертации
 - **Конвертация PCAP → HAR**: Преобразование TCP dump (PCAP) файлов в HTTP Archive формат
 - **Конвертация HAR → JMX**: Генерация JMeter тест-планов из HAR файлов
 - **Автоматическая корреляция**: Интеллектуальное обнаружение и корреляция динамических значений (session IDs, CSRF tokens, JWT и т.д.)
 - **Параметризация**: Автоматическая параметризация тестовых данных
-- **S3 хранилище**: Безопасное хранение конвертированных файлов в AWS S3 или MinIO
-- **WebSocket поддержка**: Real-time обновления прогресса конвертации
-- **REST API**: Простой и понятный API интерфейс
+- **Фильтрация трафика**: Фильтрация по порту и хосту
+- **S3 хранилище**: Безопасное хранение конвертированных файлов в AWS S3 или MinIO (для API режима)
+- **WebSocket поддержка**: Real-time обновления прогресса конвертации (для API режима)
 - **Docker поддержка**: Готовые Docker образы для быстрого развертывания
 
 ## 📋 Требования
@@ -22,28 +24,56 @@ REST API сервис для конвертации TCP dump файлов в HAR
 
 ## 🚀 Быстрый старт
 
-### Использование Docker Compose (рекомендуется)
+### CLI режим (для локальной конвертации)
 
-1. Клонируйте репозиторий:
+1. Установите инструмент:
 ```bash
+# Клонируйте репозиторий
 git clone https://github.com/your-repo/tcpdump-to-jmx.git
 cd tcpdump-to-jmx
+
+# Соберите бинарный файл
+go build -o tcpdump-to-jmx
+
+# Или установите глобально
+go install github.com/tcpdump-to-jmx@latest
 ```
 
-2. Создайте `.env` файл:
+2. Конвертируйте PCAP файл:
+```bash
+# Конвертация в HAR и JMX
+tcpdump-to-jmx convert -i capture.pcap -o ./output
+
+# Только в HAR
+tcpdump-to-jmx convert -i capture.pcap -o ./output -t har
+
+# С фильтрацией и настройками JMX
+tcpdump-to-jmx convert -i capture.pcap -o ./output \
+  --port 8080 \
+  --host api.example.com \
+  --threads 10 \
+  --ramp-up 5 \
+  --correlation
+```
+
+### API сервер режим
+
+#### Использование Docker Compose (рекомендуется)
+
+1. Создайте `.env` файл:
 ```bash
 cp .env.example .env
 # Отредактируйте .env и укажите ваши AWS credentials
 ```
 
-3. Запустите сервисы:
+2. Запустите сервисы:
 ```bash
 docker-compose up -d
 ```
 
 Сервис будет доступен по адресу: http://localhost:8080
 
-### Локальная установка
+#### Локальная установка
 
 1. Установите зависимости:
 ```bash
@@ -58,8 +88,38 @@ cp .env.example .env
 
 3. Запустите сервер:
 ```bash
-go run main.go
+# Через бинарный файл
+tcpdump-to-jmx server
+
+# Или через go run
+go run main.go server
 ```
+
+## 🖥️ CLI Использование
+
+### Основные команды
+
+```bash
+# Помощь
+tcpdump-to-jmx --help
+tcpdump-to-jmx convert --help
+
+# Конвертация с различными опциями
+tcpdump-to-jmx convert -i capture.pcap -o ./output \
+  --type both \           # har, jmx, или both
+  --port 8080 \          # Фильтр по порту
+  --host api.example.com \ # Фильтр по хосту
+  --threads 10 \         # Количество потоков в JMX
+  --ramp-up 5 \          # Время разгона в JMX
+  --loops 100 \          # Количество итераций в JMX
+  --correlation \        # Включить корреляцию
+  --parameterization \   # Включить параметризацию
+  --verbose              # Подробный вывод
+```
+
+### Примеры
+
+См. [examples/cli-usage.md](examples/cli-usage.md) для подробных примеров использования.
 
 ## 📡 API Endpoints
 
@@ -285,6 +345,10 @@ function downloadResults(jobId) {
 ```
 tcpdump-to-jmx/
 ├── main.go                 # Entry point
+├── cmd/                   # CLI commands
+│   ├── root.go           # Root command
+│   ├── convert.go        # Convert command
+│   └── server.go         # Server command
 ├── internal/
 │   ├── api/               # REST API handlers
 │   ├── config/            # Configuration
@@ -292,6 +356,8 @@ tcpdump-to-jmx/
 │   ├── models/            # Data models
 │   ├── storage/           # S3 storage interface
 │   └── worker/            # Job processing
+├── examples/              # Usage examples
+│   └── cli-usage.md      # CLI usage examples
 ├── docs/                  # API documentation
 ├── Dockerfile            # Docker image
 ├── docker-compose.yml    # Docker Compose config
