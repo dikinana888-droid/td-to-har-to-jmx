@@ -1,0 +1,16 @@
+{
+  "name": "tcpdump-to-jmx-client",
+  "version": "1.0.0",
+  "description": "Node.js client for TCPDump to JMX Converter API",
+  "main": "nodejs_client.js",
+  "scripts": {
+    "start": "node nodejs_client.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "form-data": "^4.0.0",
+    "ws": "^8.14.2"
+  },
+  "author": "",
+  "license": "MIT"
+}
